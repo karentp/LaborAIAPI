@@ -51,7 +51,7 @@
 3. **Download the Model**
 
     ```bash
-    ollama pull llama3-chaqa
+    ollama pull llama3-chatqa
     ```
 
 ## Running the API

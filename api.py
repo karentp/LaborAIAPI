@@ -1,12 +1,14 @@
+import logging
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from langchain_community.document_transformers import BeautifulSoupTransformer
 from langchain_community.document_loaders import AsyncHtmlLoader
 from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.prompts import ChatPromptTemplate
-from langchain_community.llms.ollama import Ollama
+from langchain.llms.ollama import Ollama
 from langchain.vectorstores import Chroma
 
 from langchain_core.runnables import (
@@ -16,10 +18,22 @@ from langchain_core.runnables import (
 from langchain.schema.output_parser import StrOutputParser
 import os
 
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-MODEL="llama3-chatqa"
+MODEL = "llama3-chatqa"
 
 PROMPT_TEMPLATE = """
 Responda en español a la siguiente pregunta:
@@ -37,10 +51,10 @@ links = [
 ]
 
 titles = [
-"REGIMEN DE CONTRATO DE TRABAJO  LEY N° 20.744",
-"EMPLEO Ley Nº 24.013",
-"RIESGOS DEL TRABAJO Ley N° 24.557",
-"JORNADA DE TRABAJO Ley 11.544"
+    "REGIMEN DE CONTRATO DE TRABAJO LEY N° 20.744",
+    "EMPLEO Ley Nº 24.013",
+    "RIESGOS DEL TRABAJO LEY N° 24.557",
+    "JORNADA DE TRABAJO Ley 11.544"
 ]
 
 def split_documents(documents: list[Document]):
@@ -77,7 +91,7 @@ def create_or_load_database():
     collection_name = "laborAI_db"
     db_directory = f"./{collection_name}"
 
-    embedding = SentenceTransformerEmbeddings(model_name=EMBEDDING_MODEL)
+    embedding = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
 
     if not os.path.exists(db_directory):
         print("Inicio de proceso de creación de base de datos.")
@@ -106,7 +120,7 @@ chain = get_rag_chain(retriever)
 class QuestionRequest(BaseModel):
     question: str
 
-@app.post("/get_answer")
+@app.put("/get_answer")
 async def ask_question(request: QuestionRequest):
     question = request.question
     try:
@@ -114,7 +128,8 @@ async def ask_question(request: QuestionRequest):
         contexts = [docs.page_content for docs in retriever.get_relevant_documents(question)]
         return {"answer": result, "context": contexts}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error processing request: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 if __name__ == "__main__":
     import uvicorn
