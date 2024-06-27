@@ -1,4 +1,4 @@
-# laborAI API Backend
+# LaborAI API Backend
 
 ## Initial Setup
 
@@ -51,7 +51,7 @@
 3. **Download the Model**
 
     ```bash
-    ollama pull llama3-chatqa
+    ollama pull llama3-chaqa
     ```
 
 ## Running the API
@@ -77,4 +77,4 @@
 To make a POST request using `curl`, use the following command:
 
 ```bash
-curl -X POST "http://localhost:8000/ask" -H "Content-Type: application/json" -d '{"question": "¿Cuáles son los derechos de los trabajadores según la ley 20.744?"}'
+curl -X POST "http://localhost:8000/get_answer" -H "Content-Type: application/json" -d '{"question": "¿Cuáles son los derechos de los trabajadores según la ley 20.744?"}'
