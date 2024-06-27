@@ -8,3 +8,7 @@ ollama
 chromadb
 langchain-chroma
 streamlit
+langchain
+langchain-community 
+fastapi
+uvicorn
