@@ -1,85 +1,80 @@
-# laborAI
+# laborAI API Backend
 
-## Initial setup 
+## Initial Setup
 
-1. Clone this repository
+1. **Clone this Repository**
 
-```
-cd laborAI
-python -m venv .venv
-```
+    ```bash
+    git clone <repository_url>
+    cd laborAI
+    ```
 
-2. Create a Python virtual environment
+2. **Create a Python Virtual Environment**
 
-```
-cd laborAI
-python -m venv .venv
-```
+    ```bash
+    python -m venv .venv
+    ```
 
-3. Install the requirements
+3. **Install the Requirements**
 
-```
-$ pip install -r requirements.txt
-```
-   
-4. In your terminal, activate your environment with one of the following commands, depending on your operating system.
+    ```bash
+    .venv/bin/pip install -r requirements.txt
+    ```
 
-```
-# Windows command prompt
-.venv\Scripts\activate.bat
+4. **Activate Your Virtual Environment**
 
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
+    ```bash
+    # Windows Command Prompt
+    .venv\Scripts\activate.bat
 
-# macOS and Linux
-source .venv/bin/activate
+    # Windows PowerShell
+    .venv\Scripts\Activate.ps1
 
-```
-## Ollama
+    # macOS and Linux
+    source .venv/bin/activate
+    ```
 
-Install Ollama
+## Ollama Setup
 
-```
-curl -fsSL https://ollama.com/install.sh | sh
-```
+1. **Install Ollama**
 
-Run ollama server 
+    ```bash
+    curl -fsSL https://ollama.com/install.sh | sh
+    ```
 
-```
-ollama serve &
-```
+2. **Run Ollama Server**
 
-Download model
+    ```bash
+    ollama serve &
+    ```
 
-```
-ollama pull llama3-chaqa
-```
+3. **Download the Model**
 
-## Before you run: pre-requirements
+    ```bash
+    ollama pull llama3-chatqa
+    ```
 
+## Running the API
 
-* Ollama must be running. Remember to open a terminal and start ollama
+1. **Ensure Ollama is Running**
 
-```
-ollama serve &
-```
+    Make sure the Ollama server is running:
 
+    ```bash
+    ollama serve &
+    ```
 
-### How to run it on your own machine
+2. **Run the FastAPI Application**
 
+    ```bash
+    uvicorn api:app --reload
+    ```
 
-* Run the app
+## Making Requests
 
-```
-$ streamlit run app.py
-```
+### Using `curl`
 
-### Stop the application
+To make a POST request using `curl`, use the following command:
 
-* To stop the Streamlit server, press Ctrl+C in the terminal.
-
-* When you're done using this environment, return to your normal shell by typing:
-
-```
-$ deactivate
-```
+```bash
+curl -X POST "http://localhost:8000/ask" -H "Content-Type: application/json" -d '{"question": "¿Cuáles son los derechos de los trabajadores según la ley 20.744?"}'
